@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 8 Math Quiz</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--sky:#eff6ff;--ink:#172033;--muted:#64748b;--line:#dbe4f0;--green:#15803d;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff8d9;color:var(--ink);min-height:100vh}
+header{background:#ffd900;color:#102a43;padding:25px 18px 20px;text-align:center}
+header h1{margin:0 0 8px;font-size:clamp(26px,5vw,38px);font-weight:900}header p{margin:0;color:#26364b}
+main{max-width:760px;margin:24px auto;padding:0 16px 40px}
+.panel{background:#ffd900;border:0;border-radius:24px;padding:26px;box-shadow:0 12px 30px #8b6c001c}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.level{border:2px solid #f4c900;border-radius:14px;padding:17px 10px;background:#fff;cursor:pointer;text-align:center;font-weight:700;color:var(--ink);transition:.15s}
+.level:hover,.level.active{border-color:#123b60;background:#eaf4ff;color:#123b60}
+.level small{display:block;font-weight:400;color:var(--muted);margin-top:6px}
+button{font:inherit}.primary{background:var(--blue);color:white;border:0;border-radius:11px;padding:13px 20px;font-weight:700;cursor:pointer}.primary:hover{background:#1d4ed8}.secondary{background:white;color:var(--blue);border:1px solid var(--blue);border-radius:11px;padding:12px 18px;font-weight:700;cursor:pointer}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.hidden{display:none}.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:14px;margin-bottom:12px}
+.progress{height:9px;background:#fff1a6;border-radius:20px;overflow:hidden;margin-bottom:22px}.bar{height:100%;background:#123b60;width:0;transition:width .2s}
+h2{margin:0 0 10px}.question{font-size:clamp(20px,3vw,27px);font-weight:700;line-height:1.35;margin:5px 0 22px;color:#142b45}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.answer{border:0;background:#fff;border-radius:999px;padding:14px 15px;text-align:left;cursor:pointer;color:#24364a;box-shadow:0 3px 0 #e4c000;font-weight:600;min-height:48px}
+.answer:before{content:"";display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:#123b60;color:white;font-weight:800;margin-right:9px}
+.answer:nth-child(1):before{content:"A"}.answer:nth-child(2):before{content:"B"}.answer:nth-child(3):before{content:"C"}.answer:nth-child(4):before{content:"D"}
+.answer:hover:not(:disabled){background:#eaf4ff;transform:translateY(-1px)}.answer:disabled{cursor:default;opacity:1}
+.answer.correct{border-color:#86c99a;background:#f0fdf4}.answer.wrong{border-color:#f3a1a1;background:#fef2f2}
+.feedback{margin-top:15px;padding:13px;border-radius:10px;line-height:1.45}.feedback.good{background:#f0fdf4;color:#166534}.feedback.bad{background:#fef2f2;color:#991b1b}
+.score{text-align:center;padding:14px}.score strong{font-size:42px;color:var(--blue);display:block}.muted{color:var(--muted)}.tag{display:inline-block;background:#dbeafe;color:#1e40af;padding:5px 10px;border-radius:99px;font-size:12px;font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:18px}
+@media(max-width:560px){.levels{grid-template-columns:1fr}.panel{padding:18px}.question{font-size:19px}.topline{align-items:flex-start}.answers{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>Grade 8 Math Quiz</h1><p>Practice, learn, and challenge yourself!</p></header>
+<main>
+<section id="home" class="panel">
+  <span class="tag">MATHEMATICS • GRADE 8</span>
+  <h2 style="margin-top:14px">Choose your difficulty</h2>
+  <p class="muted">Select a level to begin. Each question has four choices and instant feedback.</p>
+  <div class="levels">
+    <button class="level active" data-level="easy" onclick="chooseLevel('easy')">Easy<small>Simple questions · 1–5</small></button>
+    <button class="level" data-level="normal" onclick="chooseLevel('normal')">Normal<small>Medium questions · 1–10</small></button>
+    <button class="level" data-level="hard" onclick="chooseLevel('hard')">Hard<small>A little more challenging · 1–20</small></button>
+  </div>
+  <p id="levelDescription" class="muted">Basic operations, integers, fractions, and simple algebra.</p>
+  <button class="primary" onclick="startQuiz()">Start Quiz →</button>
+</section>
+
+<section id="quiz" class="panel hidden">
+  <div style="text-align:center;font-size:clamp(90px,18vw,150px);font-weight:900;line-height:.9;color:#123b60;text-shadow:3px 4px 0 #e9c500;margin:0 0 12px">?</div>
+  <div class="topline" style="color:#334155"><span id="levelLabel">EASY LEVEL</span><span id="counter">Question 1 of 5</span></div>
+  <div class="progress"><div id="bar" class="bar"></div></div>
+  <h2 id="questionTitle" style="text-align:center;font-size:14px;color:#334155">Question 1</h2>
+  <div id="questionText" class="question" style="text-align:center"></div>
+  <div id="answers" class="answers"></div>
+  <div id="feedback" class="feedback hidden"></div>
+  <div class="actions">
+    <button id="nextBtn" class="primary hidden" onclick="nextQuestion()">Next Question →</button>
+    <button class="secondary" onclick="goHome()">Exit Quiz</button>
+  </div>
+</section>
+
+<section id="result" class="panel hidden">
+  <div class="score"><span class="tag">QUIZ COMPLETED</span><h2 style="margin-top:16px">Your Result</h2><strong id="finalScore">0/5</strong><p id="resultMessage" class="muted"></p></div>
+  <div class="actions" style="justify-content:center">
+    <button class="primary" onclick="startQuiz()">Try Again</button>
+    <button class="secondary" onclick="goHome()">Choose Another Level</button>
+  </div>
+</section>
+</main>
+<footer>Keep practicing — every problem is a chance to improve!</footer>
+<script>
+const quizzes = {
+easy: [
+ {q:"What is 12 + 8?",a:["18","20","22","24"],c:1,e:"12 + 8 = 20."},
+ {q:"What is −5 + 9?",a:["−14","−4","4","14"],c:2,e:"Starting at −5 and moving 9 units right gives 4."},
+ {q:"Simplify: 3 × 4 + 2.",a:["14","18","20","24"],c:0,e:"Multiply first: 3 × 4 = 12, then 12 + 2 = 14."},
+ {q:"Solve: x + 6 = 11.",a:["4","5","6","17"],c:1,e:"Subtract 6 from both sides: x = 11 − 6 = 5."},
+ {q:"What is ½ + ½?",a:["½","1","1½","2"],c:1,e:"Two halves make one whole."}
+],
+normal: [
+ {q:"Solve: 3x + 4 = 19.",a:["3","4","5","6"],c:2,e:"Subtract 4: 3x = 15. Divide by 3: x = 5."},
+ {q:"What is the value of 2³ + 5?",a:["11","13","15","16"],c:1,e:"2³ = 8, and 8 + 5 = 13."},
+ {q:"Simplify: 4a + 3a − 2a.",a:["3a","5a","7a","9a"],c:1,e:"Combine like terms: (4 + 3 − 2)a = 5a."},
+ {q:"A triangle has angles 50° and 60°. What is the third angle?",a:["60°","70°","80°","90°"],c:1,e:"Triangle angles total 180°: 180 − 50 − 60 = 70°."},
+ {q:"Find the slope between (1, 2) and (3, 6).",a:["1","2","3","4"],c:1,e:"Slope = (6 − 2) ÷ (3 − 1) = 4 ÷ 2 = 2."},
+ {q:"What is 25% of 80?",a:["10","15","20","25"],c:2,e:"25% is one-fourth; 80 ÷ 4 = 20."},
+ {q:"Solve: 2(x − 3) = 10.",a:["2","5","8","13"],c:2,e:"Divide by 2: x − 3 = 5. Add 3: x = 8."},
+ {q:"What is the square root of 144?",a:["10","11","12","14"],c:2,e:"12 × 12 = 144, so √144 = 12."},
+ {q:"A rectangle is 9 cm long and 4 cm wide. What is its area?",a:["13 cm²","26 cm²","36 cm²","40 cm²"],c:2,e:"Area = length × width = 9 × 4 = 36 cm²."},
+ {q:"Which is equivalent to 3/4?",a:["6/10","9/12","12/20","15/24"],c:1,e:"Multiply numerator and denominator of 3/4 by 3 to get 9/12."}
+],
+hard: [
+ {q:"Solve: 5x − 7 = 3x + 9.",a:["6","7","8","9"],c:2,e:"Subtract 3x and add 7: 2x = 16, so x = 8."},
+ {q:"Simplify: 3(2x − 4) + 5x.",a:["6x − 12","11x − 12","11x + 12","6x + 1"],c:1,e:"Distribute: 6x − 12 + 5x = 11x − 12."},
+ {q:"Evaluate 2⁴ × 2².",a:["2⁶ = 64","2⁸ = 256","4⁶ = 4096","2² = 4"],c:0,e:"For the same base, add exponents: 2⁴ × 2² = 2⁶ = 64."},
+ {q:"A right triangle has legs 6 cm and 8 cm. Find its hypotenuse.",a:["9 cm","10 cm","12 cm","14 cm"],c:1,e:"By the Pythagorean theorem, c² = 6² + 8² = 100, so c = 10 cm."},
+ {q:"Solve: (x/3) + 4 = 9.",a:["12","15","18","21"],c:1,e:"Subtract 4: x/3 = 5. Multiply by 3: x = 15."},
+ {q:"What is the y-intercept of y = 3x − 7?",a:["−7","−3","3","7"],c:0,e:"In y = mx + b, the y-intercept is b, which is −7."},
+ {q:"Factor: x² + 7x + 12.",a:["(x + 2)(x + 6)","(x + 3)(x + 4)","(x − 3)(x − 4)","(x + 1)(x + 12)"],c:1,e:"3 and 4 multiply to 12 and add to 7, so the factors are (x + 3)(x + 4)."},
+ {q:"A ₱500 item is discounted by 20%. What is its sale price?",a:["₱350","₱380","₱400","₱420"],c:2,e:"20% of 500 is 100. The sale price is 500 − 100 = ₱400."},
+ {q:"Solve the inequality: 2x + 3 < 11.",a:["x < 4","x > 4","x < 7","x > 7"],c:0,e:"Subtract 3: 2x < 8. Divide by 2: x < 4."},
+ {q:"Find the mean of 6, 8, 10, 12, and 14.",a:["8","9","10","11"],c:2,e:"The sum is 50. Divide by 5 values: mean = 10."},
+ {q:"What is the distance between (2, 3) and (2, 9)?",a:["4 units","5 units","6 units","7 units"],c:2,e:"The x-coordinates are equal, so the vertical distance is 9 − 3 = 6."},
+ {q:"Simplify: (3/5) ÷ (2/3).",a:["2/5","9/10","5/9","6/15"],c:1,e:"Multiply by the reciprocal: (3/5) × (3/2) = 9/10."},
+ {q:"The perimeter of a square is 36 cm. What is its area?",a:["36 cm²","64 cm²","81 cm²","144 cm²"],c:2,e:"Each side is 36 ÷ 4 = 9 cm. Area = 9² = 81 cm²."},
+ {q:"Solve: 4( x + 2 ) = 3x + 11.",a:["1","2","3","4"],c:2,e:"4x + 8 = 3x + 11. Subtract 3x and 8: x = 3."},
+ {q:"What is the value of (−3)² − 4 × 2?",a:["−17","−1","1","17"],c:2,e:"(−3)² = 9 and 4 × 2 = 8. Then 9 − 8 = 1."},
+ {q:"A bag has 3 red, 2 blue, and 5 green marbles. What is the probability of picking blue?",a:["1/5","1/4","1/3","1/2"],c:0,e:"There are 10 marbles total and 2 are blue: 2/10 = 1/5."},
+ {q:"If y = 2x + 1, what is y when x = −3?",a:["−7","−5","5","7"],c:1,e:"Substitute x = −3: y = 2(−3) + 1 = −6 + 1 = −5."},
+ {q:"Two angles are supplementary. One is 118°. Find the other.",a:["52°","62°","72°","82°"],c:1,e:"Supplementary angles add to 180°: 180 − 118 = 62°."},
+ {q:"Expand: (x + 5)(x + 2).",a:["x² + 7x + 10","x² + 10x + 7","x² + 3x + 10","x² + 7x − 10"],c:0,e:"Multiply: x² + 2x + 5x + 10 = x² + 7x + 10."},
+ {q:"A number increased by 8 is equal to three times the number minus 4. What is the number?",a:["4","5","6","8"],c:1,e:"Let n be the number: n + 8 = 3n − 4. Thus 12 = 2n, so n = 6."}
+]
+};
+let level="easy", index=0, score=0, locked=false;
+const descriptions={easy:"Basic operations, integers, fractions, and simple algebra.",normal:"Linear equations, exponents, geometry, slope, and percentages.",hard:"Multi-step equations, factoring, inequalities, and problem solving."};
+function chooseLevel(v){level=v;document.querySelectorAll(".level").forEach(b=>b.classList.toggle("active",b.dataset.level===v));document.getElementById("levelDescription").textContent=descriptions[v]}
+function show(id){["home","quiz","result"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id))}
+function startQuiz(){index=0;score=0;locked=false;show("quiz");renderQuestion()}
+function renderQuestion(){
+ const list=quizzes[level], item=list[index];locked=false;
+ document.getElementById("levelLabel").textContent=level.toUpperCase()+" LEVEL";
+ document.getElementById("counter").textContent=`Question ${index+1} of ${list.length}`;
+ document.getElementById("bar").style.width=`${index/list.length*100}%`;
+ document.getElementById("questionTitle").textContent=`Question ${index+1}`;
+ document.getElementById("questionText").textContent=item.q;
+ document.getElementById("feedback").className="feedback hidden";
+ document.getElementById("nextBtn").classList.add("hidden");
+ const box=document.getElementById("answers");box.innerHTML="";
+ item.a.forEach((choice,i)=>{const b=document.createElement("button");b.className="answer";b.textContent=String.fromCharCode(65+i)+". "+choice;b.onclick=()=>selectAnswer(i);box.appendChild(b)});
+}
+function selectAnswer(choice){
+ if(locked)return;locked=true;const item=quizzes[level][index];const buttons=[...document.querySelectorAll(".answer")];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add("correct");if(i===choice&&choice!==item.c)b.classList.add("wrong")});
+ const good=choice===item.c;if(good)score++;
+ const fb=document.getElementById("feedback");fb.textContent=(good?"Correct! ":"Not quite. ")+item.e;fb.className="feedback "+(good?"good":"bad");
+ document.getElementById("nextBtn").classList.remove("hidden");document.getElementById("nextBtn").textContent=index===quizzes[level].length-1?"See Results →":"Next Question →";
+ document.getElementById("bar").style.width=`${(index+1)/quizzes[level].length*100}%`;
+}
+function nextQuestion(){if(!locked)return;if(index<quizzes[level].length-1){index++;renderQuestion()}else finishQuiz()}
+function finishQuiz(){show("result");const total=quizzes[level].length;document.getElementById("finalScore").textContent=`${score}/${total}`;const pct=score/total;document.getElementById("resultMessage").textContent=pct===1?"Excellent! You got every question right.":pct>=.7?"Great work! Keep practicing to improve even more.":pct>=.4?"Good effort! Review the explanations and try again.":"Keep going! Practice makes progress."}
+function goHome(){show("home")}
+</script>
+</body>
+</html>
